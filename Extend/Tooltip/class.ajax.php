@@ -7,33 +7,21 @@ if ( !class_exists( 'ViExtend_Tooltip_ajax' ) ) {
     {
         protected $att = array();
 
-        public function __construct()
+        public function __construct( $att )
         {
             add_action( 'wp_enqueue_scripts', array( $this, 'ViExtend_tootlip_scripts' ) );
             add_action( 'wp_ajax_ViExtend_tootlip', array( $this, 'ViExtend_tootlip' ) ); // wp_ajax_{action}
             add_action( 'wp_ajax_nopriv_ViExtend_tootlip', array( $this, 'ViExtend_tootlip' ) ); // wp_ajax_nopriv_{action}
-            add_action( 'woocommerce_before_shop_loop_item', array( $this, 'before_shop_loop_item' ) );
+            add_action( ( isset( $att['hook'] ) ) ? $att['hook'] : 'woocommerce_before_shop_loop_item', array( $this, 'before_shop_loop_item' ) );
             add_action( 'wp_head', array( $this, 'ViExtend_Style_print') );
         }
         public function ViExtend_tootlip_scripts() {
-            //wp_enqueue_style( 'Jquery_UI_CSS', '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css', '1.12.1', 'all' );
             wp_enqueue_script( 'Jquery_UI', '//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js', array( 'jquery' ), '1.12.1', true );
             wp_enqueue_script( 'ViExtend_Tooltip', get_template_directory_uri().'/tuts/Extend/Tooltip/tooltip.js', array( 'jquery' ), '0.1', true );
-            $Query = new WP_Query( array(
-                'post_type' => 'product',
+            wp_localize_script( 'ViExtend_Tooltip', 'ViExtend_tootlip', array(
+                'ajaxurl' => site_url() . '/wp-admin/admin-ajax.php',
+                'check_nonce' => wp_create_nonce('app-nonce'),
             ) );
-            if ( $Query ) {
-                $id = [];
-                while ( $Query->have_posts() ) : $Query->the_post();
-                    $id[] .= 'id:'.$Query->post->ID;
-                endwhile;
-                wp_localize_script( 'ViExtend_Tooltip', 'ViExtend_tootlip', array(
-                    'ajaxurl' => site_url() . '/wp-admin/admin-ajax.php',
-                    'check_nonce' => wp_create_nonce('app-nonce'),
-                ) );
-            } else {
-                echo 'Oop! Lổi Rồi';
-            }
         }
         public function before_shop_loop_item()
         {
@@ -101,6 +89,21 @@ if ( !class_exists( 'ViExtend_Tooltip_ajax' ) ) {
                 background-color: #fff;
                 font-size: 14px;
                 border: 1px solid #ededed;
+                position: absolute;
+	            z-index: 9999;
+            }
+            .ui-helper-hidden {
+                display: none;
+            }
+            .ui-helper-hidden-accessible {
+                border: 0;
+                clip: rect(0 0 0 0);
+                height: 1px;
+                margin: -1px;
+                overflow: hidden;
+                padding: 0;
+                position: absolute;
+                width: 1px;
             }
             .price_all {
                 padding : 10px;
@@ -128,9 +131,6 @@ if ( !class_exists( 'ViExtend_Tooltip_ajax' ) ) {
             }
             .price_all strong {
                 font-weight: normal;
-            }
-            body .ui-visual-focus {
-                box-shadow: none;
             }
             </style>
             <?php 

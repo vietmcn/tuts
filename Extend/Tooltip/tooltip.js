@@ -32,7 +32,9 @@ jQuery(document).ready(function ($) {
     
     $(".product a.ViExtend-tooltips").mouseout(function(){
         // re-initializing tooltip
+        $(this).addClass('tooltip');
         $(this).tooltip();
         $('.ui-tooltip').hide();
+        $('.ui-helper-hidden-accessible').remove();
     });
 });
