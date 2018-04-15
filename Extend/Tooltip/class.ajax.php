@@ -132,6 +132,9 @@ if ( !class_exists( 'ViExtend_Tooltip_ajax' ) ) {
             .price_all strong {
                 font-weight: normal;
             }
+            .ViExtend-tooltip {
+                display: block;
+            }
             </style>
             <?php 
         }
